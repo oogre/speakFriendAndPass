@@ -1,13 +1,29 @@
 
 let content;
-
 let body;
+let oldColor = [255, 255, 255];
+let newColor = [0, 0, 0];
 
 function setup() {
   	noCanvas();
   	loadStrings('/password', onPasswordLoaded);
   	content = document.querySelector("#content");
   	titleSyle();
+}
+
+function draw(){
+	console.log(oldColor);
+	for(let i = 0 ; i < oldColor.length && i<newColor.length ; i ++){
+		oldColor[i] = Math.floor(lerp(oldColor[i], newColor[i], 0.01));	
+	}
+	document.body.style.backgroundColor = "#" + oldColor[0].toString(16)+
+												oldColor[1].toString(16)+
+												oldColor[2].toString(16);
+	
+	content.style.color = "#" +	(255-oldColor[0]).toString(16)+
+								(255-oldColor[1]).toString(16)+
+								(255-oldColor[2]).toString(16);
+
 }
 
 function titleSyle(){
@@ -26,21 +42,13 @@ function titleSyle(){
 
 function passwordStyle(word){
 	content.innerHTML = word;
-	let colors = [0, 0, 0];
-	let v = word.split("").reduce((acc, char)=>{
-		let index = Math.floor(Math.random() * 3);
-		colors[index] += char.charCodeAt(0);
-		colors[index] %= 255;
-		return acc += char.charCodeAt(0);
-	}, 0);
-
-	document.body.style.backgroundColor = "#" + colors[0].toString(16)+
-												colors[1].toString(16)+
-												colors[2].toString(16);
 	
-	content.style.color = "#" +	(255-colors[0]).toString(16)+
-								(255-colors[1]).toString(16)+
-								(255-colors[2]).toString(16);
+	word.split("").map(char=>{
+		let index = Math.floor(Math.random() * 3);
+		let currentChar = char.charCodeAt(0);
+		newColor[index] += currentChar;
+		newColor[index] %= 255;	
+	});
 }
 
 function onPasswordLoaded(wordsToSay){
