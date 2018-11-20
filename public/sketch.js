@@ -1,32 +1,26 @@
 
 let content;
-let body;
+let title;
 let oldColor = [255, 255, 255];
 let newColor = [0, 0, 0];
-let titleColor = 0;
-let oldTitleColor = 0;
-let _mouseX = 0;
+
+
 function setup() {
   	noCanvas();
   	loadStrings('/password', onPasswordLoaded);
   	content = document.querySelector("#content");
+  	title = document.querySelector("#title");
   	titleSyle();
-  	document.body.onmousemove = function(e) {
- 	   //console.log(e.pageX, e.pageY);
- 	   _mouseX = e.pageX;
-	}
 }
 
 
 function draw(){
-
 	oldColor[0] = lerp(oldColor[0], newColor[0], 0.1);	
 	oldColor[1] = lerp(oldColor[1], newColor[1], 0.1);	
 	oldColor[2] = lerp(oldColor[2], newColor[2], 0.1);	
-	oldTitleColor = lerp(oldTitleColor, titleColor, 0.1);	
-
-	let inverseColor = [255-oldColor[0], 255-oldColor[1], 255 - oldColor[2]];
 	
+	let inverseColor = [255-oldColor[0], 255-oldColor[1], 255 - oldColor[2]];
+
 	let lum = 0.2126 * inverseColor[0] + 0.7152 * inverseColor[1] + 0.0722 * inverseColor[2];
 	lum  = map(lum, 0, 255, -1, 2);
 	let nlum = lum / sqrt(1 + lum*lum);
@@ -42,9 +36,9 @@ function draw(){
 								Math.floor(inverseColor[2]).toString(16);
 
 
-	document.querySelector("#title").style.color = "#" + Math.floor(nlum).toString(16)+
-														 Math.floor(nlum).toString(16)+
-														 Math.floor(nlum).toString(16);
+	title.style.color = "#" + Math.floor(nlum).toString(16)+
+							  Math.floor(nlum).toString(16)+
+							  Math.floor(nlum).toString(16);
 }
 
 function titleSyle(){
