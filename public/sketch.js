@@ -3,27 +3,48 @@ let content;
 let body;
 let oldColor = [255, 255, 255];
 let newColor = [0, 0, 0];
-
+let titleColor = 0;
+let oldTitleColor = 0;
+let _mouseX = 0;
 function setup() {
   	noCanvas();
   	loadStrings('/password', onPasswordLoaded);
   	content = document.querySelector("#content");
   	titleSyle();
+  	document.body.onmousemove = function(e) {
+ 	   //console.log(e.pageX, e.pageY);
+ 	   _mouseX = e.pageX;
+	}
 }
 
-function draw(){
-	console.log(oldColor);
-	for(let i = 0 ; i < oldColor.length && i<newColor.length ; i ++){
-		oldColor[i] = Math.floor(lerp(oldColor[i], newColor[i], 0.01));	
-	}
-	document.body.style.backgroundColor = "#" + oldColor[0].toString(16)+
-												oldColor[1].toString(16)+
-												oldColor[2].toString(16);
-	
-	content.style.color = "#" +	(255-oldColor[0]).toString(16)+
-								(255-oldColor[1]).toString(16)+
-								(255-oldColor[2]).toString(16);
 
+function draw(){
+
+	oldColor[0] = lerp(oldColor[0], newColor[0], 0.1);	
+	oldColor[1] = lerp(oldColor[1], newColor[1], 0.1);	
+	oldColor[2] = lerp(oldColor[2], newColor[2], 0.1);	
+	oldTitleColor = lerp(oldTitleColor, titleColor, 0.1);	
+
+	let inverseColor = [255-oldColor[0], 255-oldColor[1], 255 - oldColor[2]];
+	
+	let lum = 0.2126 * inverseColor[0] + 0.7152 * inverseColor[1] + 0.0722 * inverseColor[2];
+	lum  = map(lum, 0, 255, -1, 2);
+	let nlum = lum / sqrt(1 + lum*lum);
+	nlum += 1;
+	nlum *= 128;
+	
+	document.body.style.backgroundColor = "#" + Math.floor(oldColor[0]).toString(16)+
+												Math.floor(oldColor[1]).toString(16)+
+												Math.floor(oldColor[2]).toString(16);
+	
+	content.style.color = "#" +	Math.floor(inverseColor[0]).toString(16)+
+								Math.floor(inverseColor[1]).toString(16)+
+								Math.floor(inverseColor[2]).toString(16);
+
+
+	document.querySelector("#title").style.color = "#" + Math.floor(nlum).toString(16)+
+														 Math.floor(nlum).toString(16)+
+														 Math.floor(nlum).toString(16);
 }
 
 function titleSyle(){
@@ -46,7 +67,7 @@ function passwordStyle(word){
 	word.split("").map(char=>{
 		let index = Math.floor(Math.random() * 3);
 		let currentChar = char.charCodeAt(0);
-		newColor[index] += currentChar;
+		newColor[index] = currentChar;
 		newColor[index] %= 255;	
 	});
 }
@@ -63,7 +84,7 @@ function onPasswordLoaded(wordsToSay){
 		if(synth.speaking){
 			setTimeout(waitUntilStopSpeaking, 20);	
 		}else{
-			loadStrings('/password', onPasswordLoaded);
+			setTimeout(loadStrings('/password', onPasswordLoaded), 20);
 		}
 	}
 	waitUntilStopSpeaking();
